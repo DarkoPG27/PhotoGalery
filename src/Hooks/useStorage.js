@@ -1,26 +1,35 @@
 import { useState, useEffect } from 'react';
 import { projectStorage } from '../firebase/config';
-
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 const useStorage = (file) => {
-    const [progress, setProgress] = useState(0);
-    const [error, setError] = useState(null);
-    const [url, setUrl] = useState(null);
+    const [progress, setProgress] = useState(0); // progress of upload
+    const [error, setError] = useState(null); // any error from upload
+    const [url, setUrl] = useState(null); // img url from storage after the image is uploaded
 
     useEffect(() => {
         // references
-        const storageRef = projectStorage.ref(file.name);
 
+        const storageRef = ref(projectStorage, file.name);
+        const uploadTask = uploadBytesResumable(storageRef, file);
 
-        storageRef.put(file).on('state_changed', (snap) => {
-            let percentige = (snap.bytesTransferred / snap.totalBytes) * 100; //procenat upload-ovanja
-            setProgress(percentige);
-        }, (err) => {
-            setError(err);
-        }, async () => {
-            const url = await storageRef.getDownloadUrl();
-            setUrl(url)
-        })
-    }, [file])
+        uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+                let percentage =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setProgress(percentage);
+            },
+            (err) => {
+                setError(err);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(url =>
+
+                    setUrl(url)
+                )
+            }
+        );
+    }, [file]); //ako se promijeni file, pokrecu se kod unutar funkcije unutar useEffect-a
 
     return { progress, url, error }
 }

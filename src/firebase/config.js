@@ -1,8 +1,9 @@
-import * as firebase from 'firebase/app';
-import 'firebase/storage';
-import 'firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
-// Your web app's Firebase configuration
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyAqMKz9NvNLTMZ8IdgtU3QO8MvUKOctA0g",
     authDomain: "photogalery-80f33.firebaseapp.com",
@@ -10,11 +11,13 @@ const firebaseConfig = {
     storageBucket: "photogalery-80f33.appspot.com",
     messagingSenderId: "93185050161",
     appId: "1:93185050161:web:22f7fd0a604487725af710"
-};
+}
 
-firebase.initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
+const projectStorage = getStorage();
+const projectFirestore = getFirestore();
 
-const projectStorage = firebase.storage();
-const projectFirestore = firebase.firestore();
 
-export { projectFirestore, projectStorage };
+export { projectStorage, projectFirestore };
+
+
